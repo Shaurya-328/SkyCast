@@ -88,7 +88,13 @@ function getfromSessionStorage(){
       const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
           );
+
+      // convert the fetched data into json format
+      // use await to wait until the data is converted
       const data = await response.json();
+
+      // run the api key on google(convert to json then) for a demo city to check what all outputs are we getting from the api response so we can fetch the required details
+
       // now since data is available remove the loaading screen 
 
       loadingScreen.classList.remove("active");
@@ -96,7 +102,7 @@ function getfromSessionStorage(){
       // now make the data visible
       userInfoContainer.classList.add("active");
 
-      // now add values dynamically 
+      // now add values to the UI  dynamically 
       renderWeatherInfo(data);
     }
     catch(err){
@@ -105,6 +111,7 @@ function getfromSessionStorage(){
     }
 }
 
+// responsible for updating the UI
 function renderWeatherInfo(weatherInfo){
      // firstly we have to fetch the elements
     const cityName = document.querySelector("[data-cityName]");
@@ -147,11 +154,12 @@ function renderWeatherInfo(weatherInfo){
 
 function getLocation(){
    if(navigator.geolocation){
+      // checks whether the brwoser supports geolocation or not
       navigator.geolocation.getCurrentPosition(showPosition);
       // showposition is a callback function
    }
    else{
-     // show an alert for no geolocation support available
+      alert("Geolocation is not supported by your browser. Please use search instead.");
    }
 }
 
@@ -196,6 +204,12 @@ async function fetchSearchWeatherInfo(city){
       const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
           );
+
+      // throw error if the city is not found
+      if(!response.ok){
+         throw new Error("City not found");
+      }
+
       const data = await response.json();
 
       // now remove the loading screen
@@ -204,8 +218,9 @@ async function fetchSearchWeatherInfo(city){
       renderWeatherInfo(data);
    }
    catch(err){
-     // hw
+      // if you dont catch it it will just show a white screen;
+     loadingScreen.classList.remove("active");
+     alert("Couldn't find that city. Please check the spelling and try again.");
    }
-   
 }
 
